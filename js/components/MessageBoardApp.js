@@ -1,7 +1,6 @@
 import MessageBoardAPI, {
   commentData
-}
-from '../MessageBoardAPI.js';
+} from "../MessageBoardAPI.js";
 
 class MessageBoardApp extends HTMLElement {
   constructor() {
@@ -9,16 +8,27 @@ class MessageBoardApp extends HTMLElement {
 
     this.api = new MessageBoardAPI(commentData);
     this.state = {
-      comments: this.api.getCommentsSortedByTime(),
-    }
+      comments: this.api.getCommentsSortedByTime()
+    };
+
+    this.addEventListener(
+      "removeComment",
+      this.handleRemoveComment
+    );
   }
 
   // setState({ comments: updatedComments })
+  // takes in new pieces of state
   setState(newState) {
+    // for each piece of state
     Object.keys(newState).forEach(key => {
-      this.state[key] = newState[key]
+      // update the correct key
+      this.state[key] = newState[key];
+      // select all child elements tracking this piece of state via attributes
       this.querySelectorAll(`[${key}]`).forEach(element => {
-        element[key] = newState[key]
+        // sets the attribute via the setter
+        // element.setAttribute(key, newState[key])
+        element[key] = newState[key];
       });
     });
   }
@@ -39,7 +49,7 @@ class MessageBoardApp extends HTMLElement {
           <button type="submit">Search</button>
         </form>
       </nav>
-      <message-board-comments></message-board-comments>
+      <message-board-comment-list></message-board-comment-list>
         <div class="add-comment">
           <form>
             <input
@@ -52,17 +62,26 @@ class MessageBoardApp extends HTMLElement {
         </div>
     `;
 
-    this.querySelector('message-board-comments').setAttribute('comments', JSON.stringify(this.state.comments));
+    this.querySelector("message-board-comment-list").setAttribute(
+      "comments",
+      JSON.stringify(this.state.comments)
+    );
 
     // add event listeners
-    this.querySelector('nav form').addEventListener('submit', this.handleSearchSubmit);
-    this.querySelector('.add-comment form').addEventListener('submit', this.handleAddComment);
-    this.querySelector('message-board-comments').addEventListener('removeComment', this.handleRemoveComment);
+    this.querySelector("nav form").addEventListener(
+      "submit",
+      this.handleSearchSubmit
+    );
+    this.querySelector(".add-comment form").addEventListener(
+      "submit",
+      this.handleAddComment
+    );
+
   }
 
   handleSearchSubmit = event => {
     event.preventDefault();
-    const searchText = new FormData(event.target).get('search');
+    const searchText = new FormData(event.target).get("search");
     const updatedComments = this.api.filterCommentsByText(searchText);
     this.setState({
       comments: updatedComments
@@ -71,7 +90,7 @@ class MessageBoardApp extends HTMLElement {
 
   handleAddComment = event => {
     event.preventDefault();
-    const commentText = new FormData(event.target).get('comment');
+    const commentText = new FormData(event.target).get("comment");
     event.target.reset();
     const updatedComments = this.api.addComment(commentText);
     this.setState({
@@ -81,6 +100,13 @@ class MessageBoardApp extends HTMLElement {
 
   handleRemoveComment = event => {
     event.preventDefault();
+    const confirmed = window.confirm(`Do you really want to delete "${event.detail}"?`);
+    if (confirmed) {
+      const updatedComments = this.api.removeComment(event.target.comment.id);
+      this.setState({
+        comments: updatedComments
+      });
+    }
   };
 }
 
