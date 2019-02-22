@@ -23,10 +23,12 @@ export default class CommentItem extends HTMLElement {
     this.innerHTML = `
       <p>${this.comment.text}</p>
       <button type="button" class="delete-button">x</button>
+      <button type="button" class="edit-button">Edit</button>
     `;
 
     // create custom event and emit it
     this.querySelector('button.delete-button').addEventListener('click', this.dispatchRemoveEvent);
+    this.querySelector('button.edit-button').addEventListener('click', this.dispatchUpdateEvent);
 
   }
 
@@ -36,6 +38,17 @@ export default class CommentItem extends HTMLElement {
         bubbles: true,
         detail: this.comment.text,
       })
-    )
+    );
   }
+
+  dispatchUpdateEvent = () => {
+    // const updatedData = window.prompt("Enter updated text:", this.comment.text);
+    this.dispatchEvent(
+      new CustomEvent('updateComment', {
+        bubbles: true,
+        detail: this.comment.text,
+      })
+    );
+  }
+
 }

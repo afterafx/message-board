@@ -15,6 +15,11 @@ class MessageBoardApp extends HTMLElement {
       "removeComment",
       this.handleRemoveComment
     );
+
+    this.addEventListener(
+      "updateComment",
+      this.handleUpdateComment
+    );
   }
 
   // setState({ comments: updatedComments })
@@ -91,8 +96,10 @@ class MessageBoardApp extends HTMLElement {
   handleAddComment = event => {
     event.preventDefault();
     const commentText = new FormData(event.target).get("comment");
+    const form = new FormData(event.target);
     event.target.reset();
     const updatedComments = this.api.addComment(commentText);
+    console.log(updatedComments);
     this.setState({
       comments: updatedComments
     });
@@ -108,6 +115,20 @@ class MessageBoardApp extends HTMLElement {
       });
     }
   };
+
+  handleUpdateComment = event => {
+    event.preventDefault();
+    const data = window.prompt("Type something new:", event.target.comment.text);
+
+    if (data != null) {
+      const updatedComments = this.api.updateComment(event.target.comment.id, data);
+      this.setState({
+        comments: updatedComments
+      });
+    }
+
+  }
+
 }
 
 export default MessageBoardApp;
