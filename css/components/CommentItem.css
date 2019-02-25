@@ -25,3 +25,18 @@ message-board-comment-item .delete-button {
 message-board-comment-item:hover .delete-button {
   opacity: 1;
 }
+
+message-board-comment-item .edit-button {
+  position: absolute;
+  right: 2rem;
+  top: 0;
+  transform: translate(-50%, 50%);
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 350ms;
+}
+
+message-board-comment-item:hover .edit-button {
+  opacity: 1;
+}
