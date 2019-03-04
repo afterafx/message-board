@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -5,11 +6,14 @@ function wait(ms) {
 class MessageBoardAPI {
   constructor(comments = []) {
     this.comments = comments;
+    this.url = 'https://afterafx-express-practice.herokuapp.com/api/comments/';
   }
 
   // returns all comments
   getComments() {
-    return wait(1000).then(() => this.comments);
+    // return wait(1000).then(() => this.comments);
+    return fetch(this.url)
+      .then(response => response.json());
   }
 
   /**
@@ -17,17 +21,29 @@ class MessageBoardAPI {
    * @param {string} text Text for our new comment
    * @returns {array} Updated comments array
    */
+  // eslint-disable-next-line class-methods-use-this
   addComment(text) {
-    const id = this.comments.length > 0 ? this.comments[this.comments.length - 1].id + 1 : 0;
-    const timestamp = Date.now();
-    return wait(1000).then(() => {
-      this.comments.push({
-        text,
-        id,
-        timestamp,
-      });
-      return this.comments;
-    });
+    // const id = this.comments.length > 0 ? this.comments[this.comments.length - 1].id + 1 : 0;
+    // const timestamp = Date.now();
+    // return wait(1000).then(() => {
+    //   this.comments.push({
+    //     text,
+    //     id,
+    //     timestamp,
+    //   });
+    //   return this.comments;
+    // });
+    const body = {
+      text
+    };
+    return fetch(this.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+      })
+      .then(response => response.json());
   }
 
   /**
@@ -49,11 +65,15 @@ class MessageBoardAPI {
    * @returns {array} Updated comments array
    */
   removeComment(id) {
-    const index = this.comments.findIndex(comment => comment.id === id);
-    return wait(1000).then(() => {
-      this.comments.splice(index, 1);
-      return this.comments;
-    });
+    // const index = this.comments.findIndex(comment => comment.id === id);
+    // return wait(1000).then(() => {
+    //   this.comments.splice(index, 1);
+    //   return this.comments;
+    // });
+    return fetch(`${this.url}${id}`, {
+        method: 'DELETE'
+      })
+      .then(response => response.json());
   }
 
   /**
@@ -79,10 +99,14 @@ class MessageBoardAPI {
    * @returns {array} Filtered array of comment objects
    */
   filterCommentsByText(substring = '') {
-    return wait(1000).then(() =>
-      this.comments.filter(
-        comment => comment.text.toLowerCase().includes(substring.toLowerCase())
-      ));
+    // return wait(1000).then(() =>
+    //   this.comments.filter(
+    //     comment => comment.text.toLowerCase().includes(substring.toLowerCase())
+    //   ));
+    return fetch(`${this.url}?filter=${substring}`, {
+        method: 'GET'
+      })
+      .then(response => response.json());
   }
 }
 

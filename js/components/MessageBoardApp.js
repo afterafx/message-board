@@ -2,10 +2,6 @@ import MessageBoardAPI, {
   commentData
 } from "../MessageBoardAPI.js";
 
-//
-//
-//
-//
 
 class MessageBoardApp extends HTMLElement {
   constructor() {
@@ -15,7 +11,7 @@ class MessageBoardApp extends HTMLElement {
     // set inital state
     this.state = {
       comments: [],
-      loading: true,
+      // loading: false,
     }
 
     this.addEventListener(
@@ -83,6 +79,7 @@ class MessageBoardApp extends HTMLElement {
         </div>
     `;
 
+
     this.querySelector("message-board-comment-list").setAttribute(
       "comments",
       JSON.stringify(this.state.comments)
@@ -114,10 +111,10 @@ class MessageBoardApp extends HTMLElement {
     const commentText = new FormData(event.target).get("comment");
     const form = new FormData(event.target);
     event.target.reset();
-    const updatedComments = await this.api.addComment(commentText);
-    console.log(updatedComments);
+    const responseBody = await this.api.addComment(commentText);
+    // console.log(updatedComments);
     this.setState({
-      comments: updatedComments
+      comments: responseBody.comments
     });
   };
 
@@ -127,7 +124,7 @@ class MessageBoardApp extends HTMLElement {
     if (confirmed) {
       const updatedComments = await this.api.removeComment(event.target.comment.id);
       this.setState({
-        comments: updatedComments
+        comments: updatedComments.comments
       });
     }
   };
@@ -135,9 +132,9 @@ class MessageBoardApp extends HTMLElement {
   handleUpdateComment = async event => {
     event.preventDefault();
     const data = window.prompt("Type something new:", event.target.comment.text);
-
     if (data != null) {
       const updatedComments = await this.api.updateComment(event.target.comment.id, data);
+      loadingScreen();
       this.setState({
         comments: updatedComments
       });
@@ -145,6 +142,16 @@ class MessageBoardApp extends HTMLElement {
 
   }
 
+  loadingScreen = () => {
+    if (this.loading) {
+      document.getElementsByClassName('loader').style.display = "block";
+    } else {
+      document.getElementsByClassName('loader').style.displa = "none";
+    }
+  }
+
 }
+
+
 
 export default MessageBoardApp;
